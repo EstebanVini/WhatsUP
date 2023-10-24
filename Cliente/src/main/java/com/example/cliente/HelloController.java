@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 
@@ -11,6 +13,11 @@ import java.io.*;
 import java.net.Socket;
 
 public class HelloController {
+    public TextField username;
+    public TextField password;
+    public Button btnlogin;
+    public Button btnregistro;
+    public TextField password1;
     @FXML
     VBox vbox;
     @FXML
@@ -80,5 +87,9 @@ public class HelloController {
     }
 
 
+    public void goNext(MouseEvent mouseEvent) {
+    }
 
+    public void goNext2(MouseEvent mouseEvent) {
+    }
 }
