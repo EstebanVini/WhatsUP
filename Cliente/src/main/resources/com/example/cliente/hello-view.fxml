@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -9,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="435.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="538.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
    <children>
    
        <ScrollPane layoutX="14.0" layoutY="88.0" prefHeight="184.0" prefWidth="392.0">
@@ -20,13 +21,16 @@
        <TextArea fx:id="textArea" layoutX="14.0" layoutY="291.0" prefHeight="29.0" prefWidth="273.0" />
        <Button fx:id="button" layoutX="304.0" layoutY="293.0" mnemonicParsing="false" onMouseClicked="#MandarMensaje" prefHeight="25.0" prefWidth="108.0" text="Enviar" />
        <Button layoutX="14.0" layoutY="25.0" mnemonicParsing="false" text="&lt;---" />
-       <RadioButton layoutX="20.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Simétrico" />
-       <RadioButton layoutX="151.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
-       <RadioButton layoutX="20.0" layoutY="378.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" text="Texto Plano" />
-       <RadioButton layoutX="151.0" layoutY="378.0" mnemonicParsing="false" text="Sobre Digital" />
-       <RadioButton layoutX="20.0" layoutY="420.0" mnemonicParsing="false" text="Firmar" />
-       <TextField layoutX="84.0" layoutY="416.0" />
+       <RadioButton fx:id="simetrico" layoutX="20.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Simétrico" />
+       <RadioButton fx:id="asimetrico" layoutX="151.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
+       <RadioButton fx:id="plano" layoutX="20.0" layoutY="378.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" selected="true" text="Texto Plano" />
+       <RadioButton fx:id="sobredigital" layoutX="151.0" layoutY="378.0" mnemonicParsing="false" text="Sobre Digital" />
+       <RadioButton fx:id="firmar" layoutX="20.0" layoutY="420.0" mnemonicParsing="false" text="Firmar" />
+       <TextField fx:id="llavepublica" layoutX="84.0" layoutY="416.0" promptText="llave publica" />
        <TextArea layoutX="71.0" layoutY="20.0" prefHeight="56.0" prefWidth="295.0" />
-       <TextArea layoutX="287.0" layoutY="414.0" prefHeight="29.0" prefWidth="131.0" />
+      <Button layoutX="442.0" layoutY="161.0" mnemonicParsing="false" text="Descifrar" />
+      <TextField fx:id="llavedescifrar" layoutX="422.0" layoutY="120.0" prefHeight="25.0" prefWidth="102.0" promptText="llave" />
+      <Text layoutX="422.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descifrar último mensaje" wrappingWidth="119.0" />
+      <TextField fx:id="llaveprivada" layoutX="257.0" layoutY="416.0" promptText="llave privada" />
    </children>
 </AnchorPane>

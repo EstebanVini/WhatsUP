@@ -4,29 +4,25 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HelloController {
-
-    @FXML
     public TextField username;
-    @FXML
     public TextField password;
-    @FXML
     public Button btnlogin;
-    @FXML
+    public Button btnregistro;
     public TextField phone;
-    String Mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789¿'¡?=)(/&%$#!";
-    String Minusculas = "abcdefghijklmnopqrstuvwxyz 0123456789¿'¡?=)(/&%$#!";
-    cifrado obj = new cifrado(Mayusculas, Minusculas);
-
+    public RadioButton simetrico;
+    public RadioButton asimetrico;
+    public RadioButton sobredigital;
+    public RadioButton plano;
+    public RadioButton firmar;
+    public TextField llavepublica;
+    public TextField llavedescifrar;
+    public TextField llaveprivada;
     @FXML
     VBox vbox;
     @FXML
@@ -35,54 +31,31 @@ public class HelloController {
     Button button;
 
     String temp;
-    String usernameString = "";
-    String passwordString = "";
-    String telefonoString = "";
-    Boolean SocketConnected = false;
+
     Socket socket;
     DataOutputStream salida;
     DataInputStream entrada;
 
-    List<DataUsers> users = new ArrayList<>();
+    @FXML
+    void MandarMensaje() throws Exception {
 
-    public void MandarMensaje(MouseEvent mouseEvent) {
-    }
 
-    public  class DataUsers{
-        private String username;
-        private String phone;
+        try{
+            String mensaje = textArea.getText();
 
-        public DataUsers(String username, String phone) {
-            this.username = username;
-            this.phone = phone;
+
+            Platform.runLater(() -> {
+                Label label = new Label(mensaje);
+                vbox.getChildren().add(label);
+            });
+
+
+            salida.writeUTF(mensaje);
+            textArea.setText("");
+        } catch (IOException error) {
+            System.out.println(error);
         }
 
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-    }
-    List<DataMensajes> HistorialMensajes = new ArrayList<>();
-
-    public class DataMensajes{
-        private String mensaje;
-        private String username;
-
-        public DataMensajes(String mensaje, String username, String message) {
-            this.mensaje = mensaje;
-            this.username = username;
-        }
-
-        public String getMensaje() {
-            return mensaje;
-        }
-
-        public String getUsername() {
-            return username;
-        }
     }
 
     public void initialize() {
@@ -93,94 +66,64 @@ public class HelloController {
                 socket = new Socket("127.0.0.1", 12345);
                 entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 salida = new DataOutputStream(socket.getOutputStream());
-                SocketConnected = true;
+
+                try {
+                    while (true) {
+                        String mensajeRecibido = entrada.readUTF();
+
+                        Platform.runLater(() -> {
+                            Label label = new Label(mensajeRecibido);
+                            label.setStyle("-fx-font-weight: bold;");
+                            vbox.getChildren().add(label);
+                        });
+                    }
+                } catch (IOException error) {
+                    System.out.println("Error al recibir mensaje: " + error.getMessage());
+                }
             } catch (IOException error) {
                 System.out.println(error);
             }
         });
         socketThread.setDaemon(true);
         socketThread.start();
+
+
+
     }
 
     @FXML
-    public void login(MouseEvent mouseEvent) throws IOException {
-        usernameString = username.getText();
-        passwordString = password.getText();
-        telefonoString = phone.getText();
-        if (usernameString.isEmpty() || passwordString.isEmpty() || telefonoString.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Error");
-            alert.setContentText("Por favor llene todos los campos");
-            alert.showAndWait();
-        } else {
-            if (SocketConnected) {
-                salida.writeUTF("login");
-                salida.writeUTF(usernameString);
-                salida.writeUTF(passwordString);
-                salida.writeUTF(telefonoString);
-            }
+    void login() {
+        String usernameText = username.getText();
+        String passwordText = password.getText();
+        String phoneText = phone.getText();
+
+        // Valida los campos de nombre de usuario, contraseña y teléfono
+        if (usernameText.isEmpty() || passwordText.isEmpty() || phoneText.isEmpty()) {
+            // Muestra un mensaje de error al usuario
+            System.out.println("Error: Debe llenar todos los campos");
+
+            return;
         }
-        
-        Stage stage = (Stage) btnlogin.getScene().getWindow();
-        Object root = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
-    }
 
-    @FXML
-    void sendMessage(MouseEvent event) {
+        // Crea un objeto User con los datos ingresados
+        User user = new User(usernameText, passwordText, phoneText);
+
+        // Envía el objeto User al servidor
         try {
-            String message = textArea.getText();
-            DataUsers reciver = new DataUsers(usernameString, telefonoString); 
-
-            String sender = getSenderName();
-
-            DataMensajes sentMessage = new DataMensajes(sender, reciver.phone, message);
-            addToMessageHistory(sentMessage);
-
-            displayMessage(sender, message);
-
-            String messageToSend = createMessageToSend(sender, reciver.phone, message);
-            sendMessageToRecipient(messageToSend);
-
-            clearMessageTextField();
-
+            // inicializa la conexión con el servidor usando la función initializeConnection()
+            initialize();
+            
+            // Envía el objeto User al servidor
+            salida.writeUTF(user.toString());
+            salida.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+
+            // Muestra un mensaje de error al usuario
+            System.out.println("Error: No se pudo enviar el mensaje al servidor");
+
         }
+
+
     }
 
-    private String getSenderName() {
-        Stage stage = (Stage) textArea.getScene().getWindow();
-        return stage.getTitle();
-    }
-
-    private void addToMessageHistory(DataMensajes message) {
-        HistorialMensajes.add(message);
-    }
-
-    private void displayMessage(String sender, String message) {
-        Platform.runLater(() -> {
-            Label label = new Label(sender + ": " + message);
-            vbox.getChildren().add(label);
-        });
-    }
-
-    private String createMessageToSend(String sender, String recipientPhone, String message) {
-        return "SENDER=" + sender + ",RECEIVER=" + recipientPhone + ",MESSAGE=" + message;
-    }
-
-    private void sendMessageToRecipient(String messageToSend) throws IOException {
-        System.out.println("messageToSend: " + messageToSend);
-        salida.writeUTF(messageToSend);
-        salida.flush();
-    }
-
-    private void clearMessageTextField() {
-        textArea.setText("");
-    }
-
-    
-
-    public void goNext2(MouseEvent mouseEvent) {
-    }
 }
