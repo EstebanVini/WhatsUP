@@ -136,13 +136,6 @@ public class HelloController {
 
                 salida.writeUTF(mensajeFirmado);
                 textArea.setText("");
-
-                // Muestra una alerta con la llave pública
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Llave Pública");
-                alert.setHeaderText("Tu llave pública es:");
-                alert.setContentText(llavePublica);
-                alert.showAndWait();
             } catch (Exception error) {
                 System.out.println(error);
             }

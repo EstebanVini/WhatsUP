@@ -37,7 +37,7 @@
       <TextField fx:id="llavedestinatario" layoutX="233.0" layoutY="477.0" prefHeight="25.0" prefWidth="108.0" promptText="llave destinatario" />
       <Text layoutX="421.0" layoutY="253.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Revisar Integridad último mensaje" wrappingWidth="108.0" />
       <TextField fx:id="llavepublicaFirma" layoutX="435.0" layoutY="282.0" prefHeight="25.0" prefWidth="79.0" promptText="llave pública" />
-      <Button fx:id="btnRevisarFirma" layoutX="448.0" layoutY="314.0" mnemonicParsing="false" text="Revisar" />
+      <Button fx:id="btnRevisarFirma" layoutX="448.0" layoutY="314.0" mnemonicParsing="false" text="Revisar" onMouseClicked="#funcbtnComprobarFirma" />
       <Button fx:id="btndescifrarSobre" layoutX="429.0" layoutY="182.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="90.0" text=" sobre digital" onMouseClicked="#funcdescifrarsobre" />
    </children>
 </AnchorPane>
