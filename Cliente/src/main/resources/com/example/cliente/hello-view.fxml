@@ -28,12 +28,15 @@
        <CheckBox fx:id="firmar" layoutX="14.0" layoutY="464.0" mnemonicParsing="false" text="Firmar" />
        <TextField fx:id="llavepublica" layoutX="92.0" layoutY="460.0" promptText="llave publica" />
        <TextArea layoutX="71.0" layoutY="20.0" prefHeight="56.0" prefWidth="295.0" />
-      <Button layoutX="442.0" layoutY="161.0" mnemonicParsing="false" text="Descifrar" />
-      <TextField fx:id="llavedescifrar" layoutX="422.0" layoutY="120.0" prefHeight="25.0" prefWidth="102.0" promptText="llave" />
-      <Text layoutX="422.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descifrar último mensaje" wrappingWidth="119.0" />
+      <Button fx:id="btnDescifrar" layoutX="443.0" layoutY="134.0" mnemonicParsing="false" text="Descifrar" onMouseClicked="#funcbtnDescifrar" />
+      <TextField fx:id="llavedescifrar" layoutX="423.0" layoutY="95.0" prefHeight="25.0" prefWidth="102.0" promptText="llave" />
+      <Text layoutX="422.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descifrar último mensaje" wrappingWidth="119.0" />
       <TextField fx:id="llaveprivada" layoutX="264.0" layoutY="460.0" promptText="llave privada" />
       <TextField fx:id="claveDesplazamiento" layoutX="292.0" layoutY="366.0" promptText="llave para cifrado" />
       <TextField fx:id="clavesesion" layoutX="136.0" layoutY="415.0" prefHeight="25.0" prefWidth="79.0" promptText="clave sesion" />
       <TextField fx:id="llavedestinatario" layoutX="230.0" layoutY="415.0" prefHeight="25.0" prefWidth="108.0" promptText="llave destinatario" />
+      <Text layoutX="420.0" layoutY="193.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Revisar Integridad último mensaje" wrappingWidth="108.0" />
+      <TextField fx:id="llavepublicaFirma" layoutX="435.0" layoutY="221.0" prefHeight="25.0" prefWidth="79.0" promptText="llave pública" />
+      <Button fx:id="btnRevisarFirma" layoutX="448.0" layoutY="260.0" mnemonicParsing="false" text="Revisar" />
    </children>
 </AnchorPane>

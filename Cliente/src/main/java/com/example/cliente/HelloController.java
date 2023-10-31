@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-
 import java.io.*;
 import java.net.Socket;
 
@@ -29,6 +28,9 @@ public class HelloController {
     public TextField claveDesplazamiento;
     public TextField clavesesion;
     public TextField llavedestinatario;
+    public TextField llavepublicaFirma;
+    public Button btnRevisarFirma;
+    public Button btnDescifrar;
     @FXML
     VBox vbox;
     @FXML
@@ -36,32 +38,28 @@ public class HelloController {
     @FXML
     Button button;
 
-    String temp;
-
+    private String ultimoMensajeRecibido = ""; // Variable para almacenar el último mensaje recibido
     Socket socket;
     DataOutputStream salida;
     DataInputStream entrada;
 
     @FXML
     void MandarMensaje() throws Exception {
+        if (plano.isSelected()) {
+            try {
+                String mensaje = textArea.getText();
 
-            if (plano.isSelected()) {
-                try {
-                    String mensaje = textArea.getText();
+                Platform.runLater(() -> {
+                    Label label = new Label(mensaje);
+                    vbox.getChildren().add(label);
+                });
 
-
-                    Platform.runLater(() -> {
-                        Label label = new Label(mensaje);
-                        vbox.getChildren().add(label);
-                    });
-
-                    salida.writeUTF(mensaje);
-                    textArea.setText("");
-                }catch (IOException error) {
-                        System.out.println(error);
-                    }
-
-            } if (simetrico.isSelected()) {
+                salida.writeUTF(mensaje);
+                textArea.setText("");
+            } catch (IOException error) {
+                System.out.println(error);
+            }
+        } else if (simetrico.isSelected()) {
             try {
                 String mensaje = textArea.getText();
                 String llave = claveDesplazamiento.getText();
@@ -84,7 +82,6 @@ public class HelloController {
                 String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llave));
                 String llavePublica = String.valueOf(Cifrado.inverso(Integer.parseInt(llave)));
 
-
                 Platform.runLater(() -> {
                     Label label = new Label(mensajeCifrado);
                     vbox.getChildren().add(label);
@@ -105,16 +102,11 @@ public class HelloController {
         } else if (sobredigital.isSelected()) {
             try {
                 String mensaje = textArea.getText();
-
                 String llavesesion = clavesesion.getText();
                 String llavepublicaReceptor = llavedestinatario.getText();
-
                 String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavesesion));
-
-                String mensajeyllave = mensajeCifrado + " Llave sesión: " + llavesesion;
-
+                String mensajeyllave = mensaje + " Llave sesión: " + llavesesion;
                 String sobre = Cifrado.cifrar(mensajeyllave, Integer.parseInt(llavepublicaReceptor));
-
 
                 Platform.runLater(() -> {
                     Label label = new Label(sobre);
@@ -123,20 +115,16 @@ public class HelloController {
 
                 salida.writeUTF(sobre);
                 textArea.setText("");
-            }catch (IOException error) {
+            } catch (IOException error) {
                 System.out.println(error);
             }
-
         } else if (firmar.isSelected()) {
-
             try {
                 String mensaje = textArea.getText();
                 String llavePrivada = llaveprivada.getText();
                 String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavePrivada));
                 String llavePublica = llavepublica.getText();
-
-                String mensajeYllave = mensajeCifrado + " Llave publica: " + llavePublica;
-
+                String mensajeYllave = mensajeCifrado + " Llave pública: " + llavePublica;
                 String mensajeFirmado = Cifrado.cifrar(mensajeYllave, Integer.parseInt(llavePrivada));
 
                 Platform.runLater(() -> {
@@ -155,15 +143,56 @@ public class HelloController {
                 alert.showAndWait();
             } catch (Exception error) {
                 System.out.println(error);
-
             }
         }
+    }
 
+    @FXML
+    void funcbtnDescifrar() {
+        if (!ultimoMensajeRecibido.isEmpty()) {
+            String llaveDescifrado = llavedescifrar.getText();
+
+            try {
+                // Descifra el último mensaje recibido
+                String mensajeDescifrado = Cifrado.descifrar(ultimoMensajeRecibido, Integer.parseInt(llaveDescifrado));
+
+                // Muestra el mensaje descifrado en la interfaz
+                Platform.runLater(() -> {
+                    Label label = new Label("Mensaje Descifrado: " + mensajeDescifrado);
+                    vbox.getChildren().add(label);
+                });
+            } catch (Exception e) {
+                System.out.println("Error al descifrar el mensaje: " + e.getMessage());
+            }
+        }
+    }
+
+
+
+    private void descifrarUltimoMensaje() {
+        if (ultimoMensajeRecibido.isEmpty()) {
+            // Si no hay ningún mensaje, no se puede descifrar nada
+            return;
+        }
+
+        // Obtén la llave para descifrar (puedes pedirla al usuario o usar una llave predefinida)
+        String llaveDescifrado = llavedescifrar.getText();
+
+        try {
+            // Descifra el último mensaje recibido
+            String mensajeDescifrado = Cifrado.descifrar(ultimoMensajeRecibido, Integer.parseInt(llaveDescifrado));
+
+            // Muestra el mensaje descifrado en la interfaz
+            Platform.runLater(() -> {
+                Label label = new Label("Mensaje Descifrado: " + mensajeDescifrado);
+                vbox.getChildren().add(label);
+            });
+        } catch (Exception e) {
+            System.out.println("Error al descifrar el mensaje: " + e.getMessage());
+        }
     }
 
     public void initialize() {
-
-
         Thread socketThread = new Thread(() -> {
             try {
                 socket = new Socket("127.0.0.1", 12345);
@@ -179,6 +208,9 @@ public class HelloController {
                             label.setStyle("-fx-font-weight: bold;");
                             vbox.getChildren().add(label);
                         });
+
+                        // Actualiza el último mensaje recibido
+                        ultimoMensajeRecibido = mensajeRecibido;
                     }
                 } catch (IOException error) {
                     System.out.println("Error al recibir mensaje: " + error.getMessage());
@@ -189,9 +221,6 @@ public class HelloController {
         });
         socketThread.setDaemon(true);
         socketThread.start();
-
-
-
     }
 
     @FXML
@@ -204,7 +233,6 @@ public class HelloController {
         if (usernameText.isEmpty() || passwordText.isEmpty() || phoneText.isEmpty()) {
             // Muestra un mensaje de error al usuario
             System.out.println("Error: Debe llenar todos los campos");
-
             return;
         }
 
@@ -215,18 +243,13 @@ public class HelloController {
         try {
             // inicializa la conexión con el servidor usando la función initializeConnection()
             initialize();
-            
+
             // Envía el objeto User al servidor
             salida.writeUTF(user.toString());
             salida.flush();
         } catch (IOException e) {
-
             // Muestra un mensaje de error al usuario
             System.out.println("Error: No se pudo enviar el mensaje al servidor");
-
         }
-
-
     }
-
 }
