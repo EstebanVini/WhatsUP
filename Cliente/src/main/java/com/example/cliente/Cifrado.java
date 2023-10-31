@@ -55,13 +55,13 @@ public class Cifrado {
     }
 
     public static int inverso(int desplazamiento) {
-        return ((-desplazamiento) % 27) * -1;
+        return 27 - desplazamiento * -1;
     }
 
 
     public static void main(String[] args) {
         String texto = "Hola, mundo! ¿Cómo estás?";
-        int desplazamiento = 123;
+        int desplazamiento = 67;
 
         String cifrado = cifrar(texto, desplazamiento);
         System.out.println("Texto cifrado: " + cifrado);

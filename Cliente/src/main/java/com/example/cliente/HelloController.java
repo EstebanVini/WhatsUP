@@ -27,6 +27,8 @@ public class HelloController {
     public TextField llavedescifrar;
     public TextField llaveprivada;
     public TextField claveDesplazamiento;
+    public TextField clavesesion;
+    public TextField llavedestinatario;
     @FXML
     VBox vbox;
     @FXML
@@ -99,6 +101,61 @@ public class HelloController {
                 alert.showAndWait();
             } catch (Exception error) {
                 System.out.println(error);
+            }
+        } else if (sobredigital.isSelected()) {
+            try {
+                String mensaje = textArea.getText();
+
+                String llavesesion = clavesesion.getText();
+                String llavepublicaReceptor = llavedestinatario.getText();
+
+                String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavesesion));
+
+                String mensajeyllave = mensajeCifrado + " Llave sesión: " + llavesesion;
+
+                String sobre = Cifrado.cifrar(mensajeyllave, Integer.parseInt(llavepublicaReceptor));
+
+
+                Platform.runLater(() -> {
+                    Label label = new Label(sobre);
+                    vbox.getChildren().add(label);
+                });
+
+                salida.writeUTF(sobre);
+                textArea.setText("");
+            }catch (IOException error) {
+                System.out.println(error);
+            }
+
+        } else if (firmar.isSelected()) {
+
+            try {
+                String mensaje = textArea.getText();
+                String llavePrivada = llaveprivada.getText();
+                String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavePrivada));
+                String llavePublica = llavepublica.getText();
+
+                String mensajeYllave = mensajeCifrado + " Llave publica: " + llavePublica;
+
+                String mensajeFirmado = Cifrado.cifrar(mensajeYllave, Integer.parseInt(llavePrivada));
+
+                Platform.runLater(() -> {
+                    Label label = new Label(mensajeFirmado);
+                    vbox.getChildren().add(label);
+                });
+
+                salida.writeUTF(mensajeFirmado);
+                textArea.setText("");
+
+                // Muestra una alerta con la llave pública
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Llave Pública");
+                alert.setHeaderText("Tu llave pública es:");
+                alert.setContentText(llavePublica);
+                alert.showAndWait();
+            } catch (Exception error) {
+                System.out.println(error);
+
             }
         }
 
