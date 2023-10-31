@@ -58,6 +58,43 @@ public class Cifrado {
         return 27 - desplazamiento * -1;
     }
 
+    public static String hash(String input) {
+        if (input == null || input.isEmpty()) {
+            throw new IllegalArgumentException("La entrada no puede ser nula o vacía");
+        }
+
+        // Crear un mapa de reemplazo de letras
+        String from = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String to = "nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM";
+
+        // Inicializar una cadena de resultado vacía
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            int index = from.indexOf(c);
+            if (index != -1) {
+                // Si el carácter está en 'from', reemplazarlo con el correspondiente en 'to'
+                result.append(to.charAt(index));
+            } else {
+                // Si el carácter no está en 'from', mantenerlo sin cambios
+                result.append(c);
+            }
+
+            // Detener la iteración si la cadena de resultado alcanza los 10 caracteres
+            if (result.length() >= 10) {
+                break;
+            }
+        }
+
+        // Rellenar con 'x' si la cadena resultante tiene menos de 10 caracteres
+        while (result.length() < 10) {
+            result.append('x');
+        }
+
+        return result.toString();
+    }
+
 
     public static void main(String[] args) {
         String texto = "Hola, mundo! ¿Cómo estás? 123";
@@ -74,5 +111,8 @@ public class Cifrado {
 
         String descifrado2 = descifrar(cifrado, inverso);
         System.out.println("Texto descifrado con el inverso: " + descifrado2);
+
+        String hash = hash(texto);
+        System.out.println("Hash del texto: " + hash);
     }
 }

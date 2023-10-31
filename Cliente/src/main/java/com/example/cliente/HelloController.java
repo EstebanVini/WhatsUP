@@ -123,10 +123,11 @@ public class HelloController {
             try {
                 String mensaje = textArea.getText();
                 String llavePrivada = llaveprivada.getText();
-                String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavePrivada));
+                String hashMensaje = Cifrado.hash(mensaje);
+                String mensajeCifrado = Cifrado.cifrar(hashMensaje, Integer.parseInt(llavePrivada));
+
                 String llavePublica = llavepublica.getText();
-                String mensajeYllave = mensajeCifrado + " Llave pública: " + llavePublica;
-                String mensajeFirmado = Cifrado.cifrar(mensajeYllave, Integer.parseInt(llavePrivada));
+                String mensajeFirmado = mensaje + " Firma: " + mensajeCifrado + " Llave pública: " + llavePublica;
 
                 Platform.runLater(() -> {
                     Label label = new Label(mensajeFirmado);
@@ -187,6 +188,42 @@ public class HelloController {
                 Platform.runLater(() -> {
                     Label label = new Label("Mensaje del sobre : " + mensajeDescifrado2);
                     vbox.getChildren().add(label);
+                });
+            } catch (Exception e) {
+                System.out.println("Error al descifrar el mensaje: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    void funcbtnComprobarFirma() {
+        if (!ultimoMensajeRecibido.isEmpty()) {
+            String llavePublica = llavepublicaFirma.getText();
+
+            try {
+                // Descifra el último mensaje recibido
+                String[] mensajeYFirma = ultimoMensajeRecibido.split(" Firma: ");
+                String mensaje = mensajeYFirma[0];
+                String firma = mensajeYFirma[1];
+                String[] firmaYllave = firma.split(" Llave pública: ");
+                String firmaDescifrada = Cifrado.descifrar(firmaYllave[0], Integer.parseInt(llavePublica));
+                String hashMensaje = Cifrado.hash(mensaje);
+
+                // Muestra el mensaje descifrado en la interfaz
+                Platform.runLater(() -> {
+                    Label label = new Label("Mensaje: " + mensaje);
+                    vbox.getChildren().add(label);
+                    Label label2 = new Label("Firma: " + firmaDescifrada);
+                    vbox.getChildren().add(label2);
+                    Label label3 = new Label("Hash del mensaje: " + hashMensaje);
+                    vbox.getChildren().add(label3);
+                    if (firmaDescifrada.equals(hashMensaje)) {
+                        Label label4 = new Label("La firma es válida");
+                        vbox.getChildren().add(label4);
+                    } else {
+                        Label label4 = new Label("La firma no es válida");
+                        vbox.getChildren().add(label4);
+                    }
                 });
             } catch (Exception e) {
                 System.out.println("Error al descifrar el mensaje: " + e.getMessage());
