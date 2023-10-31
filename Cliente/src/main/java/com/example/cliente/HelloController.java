@@ -5,6 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 
 import java.io.*;
 import java.net.Socket;
@@ -15,14 +18,15 @@ public class HelloController {
     public Button btnlogin;
     public Button btnregistro;
     public TextField phone;
-    public RadioButton simetrico;
-    public RadioButton asimetrico;
-    public RadioButton sobredigital;
-    public RadioButton plano;
-    public RadioButton firmar;
+    public CheckBox simetrico;
+    public CheckBox asimetrico;
+    public CheckBox sobredigital;
+    public CheckBox plano;
+    public CheckBox firmar;
     public TextField llavepublica;
     public TextField llavedescifrar;
     public TextField llaveprivada;
+    public TextField claveDesplazamiento;
     @FXML
     VBox vbox;
     @FXML
@@ -39,21 +43,63 @@ public class HelloController {
     @FXML
     void MandarMensaje() throws Exception {
 
-
-        try{
-            String mensaje = textArea.getText();
-
-
-            Platform.runLater(() -> {
-                Label label = new Label(mensaje);
-                vbox.getChildren().add(label);
-            });
+            if (plano.isSelected()) {
+                try {
+                    String mensaje = textArea.getText();
 
 
-            salida.writeUTF(mensaje);
-            textArea.setText("");
-        } catch (IOException error) {
-            System.out.println(error);
+                    Platform.runLater(() -> {
+                        Label label = new Label(mensaje);
+                        vbox.getChildren().add(label);
+                    });
+
+                    salida.writeUTF(mensaje);
+                    textArea.setText("");
+                }catch (IOException error) {
+                        System.out.println(error);
+                    }
+
+            } if (simetrico.isSelected()) {
+            try {
+                String mensaje = textArea.getText();
+                String llave = claveDesplazamiento.getText();
+                String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llave));
+
+                Platform.runLater(() -> {
+                    Label label = new Label(mensajeCifrado);
+                    vbox.getChildren().add(label);
+                });
+
+                salida.writeUTF(mensajeCifrado);
+                textArea.setText("");
+            } catch (IOException error) {
+                System.out.println(error);
+            }
+        } else if (asimetrico.isSelected()) {
+            try {
+                String mensaje = textArea.getText();
+                String llave = claveDesplazamiento.getText();
+                String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llave));
+                String llavePublica = String.valueOf(Cifrado.inverso(Integer.parseInt(llave)));
+
+
+                Platform.runLater(() -> {
+                    Label label = new Label(mensajeCifrado);
+                    vbox.getChildren().add(label);
+                });
+
+                salida.writeUTF(mensajeCifrado);
+                textArea.setText("");
+
+                // Muestra una alerta con la llave pública
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Llave Pública");
+                alert.setHeaderText("Tu llave pública es:");
+                alert.setContentText(llavePublica);
+                alert.showAndWait();
+            } catch (Exception error) {
+                System.out.println(error);
+            }
         }
 
     }

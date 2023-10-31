@@ -21,16 +21,17 @@
        <TextArea fx:id="textArea" layoutX="14.0" layoutY="291.0" prefHeight="29.0" prefWidth="273.0" />
        <Button fx:id="button" layoutX="304.0" layoutY="293.0" mnemonicParsing="false" onMouseClicked="#MandarMensaje" prefHeight="25.0" prefWidth="108.0" text="Enviar" />
        <Button layoutX="14.0" layoutY="25.0" mnemonicParsing="false" text="&lt;---" />
-       <RadioButton fx:id="simetrico" layoutX="20.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Simétrico" />
-       <RadioButton fx:id="asimetrico" layoutX="151.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
-       <RadioButton fx:id="plano" layoutX="20.0" layoutY="378.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" selected="true" text="Texto Plano" />
-       <RadioButton fx:id="sobredigital" layoutX="151.0" layoutY="378.0" mnemonicParsing="false" text="Sobre Digital" />
-       <RadioButton fx:id="firmar" layoutX="20.0" layoutY="420.0" mnemonicParsing="false" text="Firmar" />
+       <CheckBox fx:id="simetrico" layoutX="20.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Simétrico" />
+       <CheckBox fx:id="asimetrico" layoutX="151.0" layoutY="339.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
+       <CheckBox fx:id="plano" layoutX="20.0" layoutY="378.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" selected="true" text="Texto Plano" />
+       <CheckBox fx:id="sobredigital" layoutX="151.0" layoutY="378.0" mnemonicParsing="false" text="Sobre Digital" />
+       <CheckBox fx:id="firmar" layoutX="20.0" layoutY="420.0" mnemonicParsing="false" text="Firmar" />
        <TextField fx:id="llavepublica" layoutX="84.0" layoutY="416.0" promptText="llave publica" />
        <TextArea layoutX="71.0" layoutY="20.0" prefHeight="56.0" prefWidth="295.0" />
       <Button layoutX="442.0" layoutY="161.0" mnemonicParsing="false" text="Descifrar" />
       <TextField fx:id="llavedescifrar" layoutX="422.0" layoutY="120.0" prefHeight="25.0" prefWidth="102.0" promptText="llave" />
       <Text layoutX="422.0" layoutY="89.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descifrar último mensaje" wrappingWidth="119.0" />
       <TextField fx:id="llaveprivada" layoutX="257.0" layoutY="416.0" promptText="llave privada" />
+      <TextField fx:id="claveDesplazamiento" layoutX="292.0" layoutY="335.0" promptText="llave para cifrado" />
    </children>
 </AnchorPane>

@@ -61,7 +61,7 @@ public class Cifrado {
 
     public static void main(String[] args) {
         String texto = "Hola, mundo! ¿Cómo estás?";
-        int desplazamiento = 240;
+        int desplazamiento = 123;
 
         String cifrado = cifrar(texto, desplazamiento);
         System.out.println("Texto cifrado: " + cifrado);
