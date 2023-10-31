@@ -31,6 +31,7 @@ public class HelloController {
     public TextField llavepublicaFirma;
     public Button btnRevisarFirma;
     public Button btnDescifrar;
+    public Button btndescifrarSobre;
     @FXML
     VBox vbox;
     @FXML
@@ -105,7 +106,7 @@ public class HelloController {
                 String llavesesion = clavesesion.getText();
                 String llavepublicaReceptor = llavedestinatario.getText();
                 String mensajeCifrado = Cifrado.cifrar(mensaje, Integer.parseInt(llavesesion));
-                String mensajeyllave = mensaje + " Llave sesión: " + llavesesion;
+                String mensajeyllave = mensajeCifrado + " Llave sesión: " + llavesesion;
                 String sobre = Cifrado.cifrar(mensajeyllave, Integer.parseInt(llavepublicaReceptor));
 
                 Platform.runLater(() -> {
@@ -159,6 +160,32 @@ public class HelloController {
                 // Muestra el mensaje descifrado en la interfaz
                 Platform.runLater(() -> {
                     Label label = new Label("Mensaje Descifrado: " + mensajeDescifrado);
+                    vbox.getChildren().add(label);
+                });
+            } catch (Exception e) {
+                System.out.println("Error al descifrar el mensaje: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    void funcdescifrarsobre() {
+        if (!ultimoMensajeRecibido.isEmpty()) {
+            String llaveDescifrado = llavedescifrar.getText();
+
+            try {
+                // Descifra el último mensaje recibido
+                String mensajeDescifrado = Cifrado.descifrar(ultimoMensajeRecibido, Integer.parseInt(llaveDescifrado));
+
+                // si es un sobre, el mensaje descifrado es el mensaje aún cifrado y la llave de sesion, volver a descifrar con la llave de sesión que está en el mensaje
+                String[] mensajeYllave = mensajeDescifrado.split(" Llave sesión: ");
+                String mensaje = mensajeYllave[0];
+                String llaveSesion = mensajeYllave[1];
+                String mensajeDescifrado2 = Cifrado.descifrar(mensaje, Integer.parseInt(llaveSesion));
+
+                // Muestra el mensaje descifrado en la interfaz
+                Platform.runLater(() -> {
+                    Label label = new Label("Mensaje del sobre : " + mensajeDescifrado2);
                     vbox.getChildren().add(label);
                 });
             } catch (Exception e) {

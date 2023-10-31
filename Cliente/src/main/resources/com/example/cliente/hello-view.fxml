@@ -10,33 +10,34 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="521.0" prefWidth="538.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="613.0" prefWidth="538.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
    <children>
    
-       <ScrollPane layoutX="14.0" layoutY="88.0" prefHeight="184.0" prefWidth="392.0">
+       <ScrollPane layoutX="14.0" layoutY="88.0" prefHeight="238.0" prefWidth="392.0">
       <content>
-              <VBox fx:id="vbox" prefHeight="209.0" prefWidth="389.0" />
+              <VBox fx:id="vbox" prefHeight="238.0" prefWidth="369.0" />
       </content>
        </ScrollPane>
-       <TextArea fx:id="textArea" layoutX="14.0" layoutY="291.0" prefHeight="29.0" prefWidth="273.0" />
-       <Button fx:id="button" layoutX="304.0" layoutY="293.0" mnemonicParsing="false" onMouseClicked="#MandarMensaje" prefHeight="25.0" prefWidth="108.0" text="Enviar" />
+       <TextArea fx:id="textArea" layoutX="14.0" layoutY="341.0" prefHeight="29.0" prefWidth="273.0" />
+       <Button fx:id="button" layoutX="298.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#MandarMensaje" prefHeight="25.0" prefWidth="108.0" text="Enviar" />
        <Button layoutX="14.0" layoutY="25.0" mnemonicParsing="false" text="&lt;---" />
-       <CheckBox fx:id="simetrico" layoutX="15.0" layoutY="370.0" mnemonicParsing="false" text="Cifrado Simétrico" />
-       <CheckBox fx:id="asimetrico" layoutX="151.0" layoutY="370.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
-       <CheckBox fx:id="plano" layoutX="14.0" layoutY="331.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" selected="true" text="Texto Plano" />
-       <CheckBox fx:id="sobredigital" layoutX="14.0" layoutY="419.0" mnemonicParsing="false" text="Sobre Digital" />
-       <CheckBox fx:id="firmar" layoutX="14.0" layoutY="464.0" mnemonicParsing="false" text="Firmar" />
-       <TextField fx:id="llavepublica" layoutX="92.0" layoutY="460.0" promptText="llave publica" />
+       <CheckBox fx:id="simetrico" layoutX="15.0" layoutY="426.0" mnemonicParsing="false" text="Cifrado Simétrico" />
+       <CheckBox fx:id="asimetrico" layoutX="156.0" layoutY="426.0" mnemonicParsing="false" text="Cifrado Asimétrico" />
+       <CheckBox fx:id="plano" layoutX="14.0" layoutY="384.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="102.0" selected="true" text="Texto Plano" />
+       <CheckBox fx:id="sobredigital" layoutX="14.0" layoutY="481.0" mnemonicParsing="false" text="Sobre Digital" />
+       <CheckBox fx:id="firmar" layoutX="16.0" layoutY="545.0" mnemonicParsing="false" text="Firmar" />
+       <TextField fx:id="llavepublica" layoutX="86.0" layoutY="541.0" promptText="llave publica" />
        <TextArea layoutX="71.0" layoutY="20.0" prefHeight="56.0" prefWidth="295.0" />
-      <Button fx:id="btnDescifrar" layoutX="443.0" layoutY="134.0" mnemonicParsing="false" text="Descifrar" onMouseClicked="#funcbtnDescifrar" />
+      <Button fx:id="btnDescifrar" layoutX="443.0" layoutY="134.0" mnemonicParsing="false" onMouseClicked="#funcbtnDescifrar" text="Descifrar" />
       <TextField fx:id="llavedescifrar" layoutX="423.0" layoutY="95.0" prefHeight="25.0" prefWidth="102.0" promptText="llave" />
       <Text layoutX="422.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Descifrar último mensaje" wrappingWidth="119.0" />
-      <TextField fx:id="llaveprivada" layoutX="264.0" layoutY="460.0" promptText="llave privada" />
-      <TextField fx:id="claveDesplazamiento" layoutX="292.0" layoutY="366.0" promptText="llave para cifrado" />
-      <TextField fx:id="clavesesion" layoutX="136.0" layoutY="415.0" prefHeight="25.0" prefWidth="79.0" promptText="clave sesion" />
-      <TextField fx:id="llavedestinatario" layoutX="230.0" layoutY="415.0" prefHeight="25.0" prefWidth="108.0" promptText="llave destinatario" />
-      <Text layoutX="420.0" layoutY="193.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Revisar Integridad último mensaje" wrappingWidth="108.0" />
-      <TextField fx:id="llavepublicaFirma" layoutX="435.0" layoutY="221.0" prefHeight="25.0" prefWidth="79.0" promptText="llave pública" />
-      <Button fx:id="btnRevisarFirma" layoutX="448.0" layoutY="260.0" mnemonicParsing="false" text="Revisar" />
+      <TextField fx:id="llaveprivada" layoutX="255.0" layoutY="541.0" promptText="llave privada" />
+      <TextField fx:id="claveDesplazamiento" layoutX="287.0" layoutY="422.0" prefHeight="25.0" prefWidth="113.0" promptText="llave para cifrado" />
+      <TextField fx:id="clavesesion" layoutX="128.0" layoutY="477.0" prefHeight="25.0" prefWidth="79.0" promptText="clave sesion" />
+      <TextField fx:id="llavedestinatario" layoutX="233.0" layoutY="477.0" prefHeight="25.0" prefWidth="108.0" promptText="llave destinatario" />
+      <Text layoutX="421.0" layoutY="253.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Revisar Integridad último mensaje" wrappingWidth="108.0" />
+      <TextField fx:id="llavepublicaFirma" layoutX="435.0" layoutY="282.0" prefHeight="25.0" prefWidth="79.0" promptText="llave pública" />
+      <Button fx:id="btnRevisarFirma" layoutX="448.0" layoutY="314.0" mnemonicParsing="false" text="Revisar" />
+      <Button fx:id="btndescifrarSobre" layoutX="429.0" layoutY="182.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="90.0" text=" sobre digital" onMouseClicked="#funcdescifrarsobre" />
    </children>
 </AnchorPane>

@@ -7,7 +7,7 @@ public class Cifrado {
     private static final String ALFABETO = "abcdefghijklmnñopqrstuvwxyz";
     private static final String ALFABETO_MAYUSCULA = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
 
-    private static final String NUMEROS = "01234567890123456789012345";
+    private static final String NUMEROS = "0123456789";
 
     private static final String SIMBOLOS = ".,;:!?¡¿()[]{}+-*=<>@#$%&'/";
 
@@ -60,7 +60,7 @@ public class Cifrado {
 
 
     public static void main(String[] args) {
-        String texto = "Hola, mundo! ¿Cómo estás?";
+        String texto = "Hola, mundo! ¿Cómo estás? 123";
         int desplazamiento = 67;
 
         String cifrado = cifrar(texto, desplazamiento);
