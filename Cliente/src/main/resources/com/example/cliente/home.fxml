@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.Home">
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
    <children>
-      <AnchorPane prefHeight="400.0" prefWidth="600.0">
-         <children>
-            <Button layoutX="381.0" layoutY="30.0" mnemonicParsing="false" text="Nuevo Chat" />
-            <Button layoutX="486.0" layoutY="30.0" mnemonicParsing="false" text="Nuevo Grupo" />
-         </children>
-      </AnchorPane>
+      <Label text="Usuarios Conectados" layoutX="14" layoutY="14"/>
+      <ListView fx:id="connectedUsersList" layoutX="14" layoutY="38" prefHeight="300" prefWidth="200"/>
+      <Button text="Iniciar Chat" layoutX="14" layoutY="350" onAction="#startChat"/>
    </children>
 </AnchorPane>

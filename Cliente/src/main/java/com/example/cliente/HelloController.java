@@ -1,37 +1,36 @@
 package com.example.cliente;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HelloController {
-    public TextField username;
-    public TextField password;
-    public Button btnlogin;
-    public Button btnregistro;
-    public TextField phone;
-    public CheckBox simetrico;
-    public CheckBox asimetrico;
-    public CheckBox sobredigital;
-    public CheckBox plano;
-    public CheckBox firmar;
-    public TextField llavepublica;
-    public TextField llavedescifrar;
-    public TextField llaveprivada;
-    public TextField claveDesplazamiento;
-    public TextField clavesesion;
-    public TextField llavedestinatario;
-    public TextField llavepublicaFirma;
-    public Button btnRevisarFirma;
-    public Button btnDescifrar;
-    public Button btndescifrarSobre;
+    public TextField username, password, phone, llavepublica, llavedescifrar, llaveprivada, claveDesplazamiento,
+            clavesesion, llavedestinatario, llavepublicaFirma;
+    public Button btnlogin, btnregistro, btnRevisarFirma, btnDescifrar, btndescifrarSobre;
+
+    public CheckBox simetrico, asimetrico, sobredigital, plano, firmar;
+
+    @FXML
+    private ListView<String> connectedUsersList;
+
+    private ObservableList<String> connectedUsers = FXCollections.observableArrayList();
+
     @FXML
     VBox vbox;
     @FXML
@@ -43,6 +42,9 @@ public class HelloController {
     Socket socket;
     DataOutputStream salida;
     DataInputStream entrada;
+
+    // lista de usuarios conectados
+    private List<User> users = new ArrayList<>();
 
     @FXML
     void MandarMensaje() throws Exception {
@@ -225,7 +227,6 @@ public class HelloController {
     }
 
 
-
     private void descifrarUltimoMensaje() {
         if (ultimoMensajeRecibido.isEmpty()) {
             // Si no hay ningún mensaje, no se puede descifrar nada
@@ -249,6 +250,11 @@ public class HelloController {
         }
     }
 
+    public void initializeConnectedUsers(String[] users) {
+        connectedUsers.setAll(users);
+        connectedUsersList.setItems(connectedUsers);
+    }
+
     public void initialize() {
         Thread socketThread = new Thread(() -> {
             try {
@@ -260,11 +266,42 @@ public class HelloController {
                     while (true) {
                         String mensajeRecibido = entrada.readUTF();
 
-                        Platform.runLater(() -> {
-                            Label label = new Label(mensajeRecibido);
-                            label.setStyle("-fx-font-weight: bold;");
-                            vbox.getChildren().add(label);
-                        });
+
+                        // Si el mensaje recibido comienza con la palabra Usuarios, entonces es una lista de usuarios conectados con este formato Usuarios: [Usuario:Esteban,Hola,00988989, Usuario:Andres,Hottla,00238989]
+                        if (mensajeRecibido.startsWith("Usuarios:")) {
+                            // Obtener la lista de usuarios conectados
+                            String listaUsuarios = mensajeRecibido.substring(10);
+
+                            // Convertir la lista de usuarios a un arreglo
+                            String[] usuarios = listaUsuarios.split(", ");
+
+                            // Limpiar la lista de usuarios
+                            users.clear();
+
+                            // Recorrer el arreglo de usuarios
+                            for (String usuario : usuarios) {
+                                // Convertir el usuario a un objeto User
+                                String[] parts = usuario.split(",");
+                                String username = parts[0].substring(8);
+                                String password = parts[1];
+                                String phone = parts[2];
+                                User user = new User(username, password, phone);
+
+                                // Agregar el usuario a la lista de usuarios
+                                users.add(user);
+                            }
+
+                            // Actualizar la lista de usuarios en la interfaz y mostrarla
+                            Platform.runLater(() -> {
+                                initializeConnectedUsers(usuarios);
+                            });
+                        }else {
+                            Platform.runLater(() -> {
+                                Label label = new Label(mensajeRecibido);
+                                label.setStyle("-fx-font-weight: bold;");
+                                vbox.getChildren().add(label);
+                            });
+                        }
 
                         // Actualiza el último mensaje recibido
                         ultimoMensajeRecibido = mensajeRecibido;
@@ -298,15 +335,45 @@ public class HelloController {
 
         // Envía el objeto User al servidor
         try {
-            // inicializa la conexión con el servidor usando la función initializeConnection()
+            // inicializa la conexión con el servidor usando la función initialize()
             initialize();
 
             // Envía el objeto User al servidor
-            salida.writeUTF(user.toString());
+            salida.writeUTF("Nuevo usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone());
             salida.flush();
+
+            // Muestra un mensaje de éxito al usuario
+            System.out.println("Usuario registrado con éxito: " + user.getUsername());
+
+            // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
+            stage.setScene(scene);
+
         } catch (IOException e) {
             // Muestra un mensaje de error al usuario
             System.out.println("Error: No se pudo enviar el mensaje al servidor");
         }
     }
+
+    @FXML
+    private void startChat(ActionEvent event) {
+        String selectedUser = connectedUsersList.getSelectionModel().getSelectedItem();
+        if (selectedUser != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
+                stage.setScene(scene);
+            } catch (IOException e) {
+                System.out.println("Error al abrir la ventana de chat: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Error: Debe seleccionar un usuario");
+        }
+        }
 }
+

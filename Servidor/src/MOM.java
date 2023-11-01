@@ -7,8 +7,11 @@ public class MOM {
     ServerSocket servidor;
     List<ManejadorDeClientes> clientes;
 
+    List<String> UsuariosConectados;
+
     public MOM(int port) {
         clientes = new ArrayList<>();
+        UsuariosConectados = new ArrayList<>();
 
         try {
             servidor = new ServerSocket(port);
@@ -54,17 +57,45 @@ public class MOM {
 
                     System.out.println(temp);
 
-                    // Broadcast the message to all connected clients except the sender
-                    DataOutputStream clienteSalida = this.salida;
-                    for (ManejadorDeClientes client : clientes) {
-                        if (client.salida != clienteSalida) {
+                    if (temp.startsWith("Nuevo usuario")) {
+                        String[] parts = temp.split(",");
+
+                        String username = parts[1];
+                        String password = parts[2];
+                        String phone = parts[3];
+
+                        String NuevoUsuario = " Usuario:"+ username + "," + password + "," + phone;
+
+                        UsuariosConectados.add(NuevoUsuario);
+                        System.out.println("Nuevo usuario creado");
+
+                        System.out.println("Usuarios: " + UsuariosConectados.toString());
+
+                        // Mandar Lista de usuarios conectados a todos los clientes
+                        String listaUsuarios = "Usuarios: " + UsuariosConectados.toString();
+
+                        for (ManejadorDeClientes client : clientes) {
                             try {
-                                client.salida.writeUTF(temp);
+                                client.salida.writeUTF(listaUsuarios);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
+                    } else  {
+                        // Broadcast the message to all connected clients except the sender
+                        DataOutputStream clienteSalida = this.salida;
+                        for (ManejadorDeClientes client : clientes) {
+                            if (client.salida != clienteSalida) {
+                                try {
+                                    client.salida.writeUTF(temp);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
                     }
+
                 }
             } catch (IOException i) {
                 System.out.println(i);

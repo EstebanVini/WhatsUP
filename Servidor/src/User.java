@@ -1,5 +1,3 @@
-package com.example.cliente;
-
 public class User {
     private String username;
     private String password;
