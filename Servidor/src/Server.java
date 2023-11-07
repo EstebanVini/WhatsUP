@@ -3,13 +3,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MOM {
+public class Server {
     ServerSocket servidor;
     List<ManejadorDeClientes> clientes;
 
     List<String> UsuariosConectados;
 
-    public MOM(int port) {
+    public Server(int port) {
         clientes = new ArrayList<>();
         UsuariosConectados = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class MOM {
     }
 
     public static void main(String args[]) {
-        MOM server = new MOM(12345);
+        Server server = new Server(12345);
     }
 
     private class ManejadorDeClientes implements Runnable {
