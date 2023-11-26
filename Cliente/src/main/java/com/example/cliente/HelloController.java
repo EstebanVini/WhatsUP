@@ -258,7 +258,7 @@ public class HelloController {
     public void initialize() {
         Thread socketThread = new Thread(() -> {
             try {
-                socket = new Socket("127.0.0.1", 12345);
+                socket = new Socket("127.0.0.1", 12346);
                 entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 salida = new DataOutputStream(socket.getOutputStream());
 
@@ -330,8 +330,9 @@ public class HelloController {
             return;
         }
 
+        String hashPassword = Cifrado.hash(passwordText);
         // Crea un objeto User con los datos ingresados
-        User user = new User(usernameText, passwordText, phoneText);
+        User user = new User(usernameText, hashPassword, phoneText);
 
         // Envía el objeto User al servidor
         try {

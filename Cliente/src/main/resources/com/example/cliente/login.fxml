@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -8,9 +9,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="518.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
   <children>
-    <Button fx:id="btnlogin" layoutX="73.0" layoutY="287.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="42.0" prefWidth="152.0" text="Iniciar Sesion" />
+    <Button fx:id="btnlogin" layoutX="66.0" layoutY="391.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="42.0" prefWidth="152.0" text="Iniciar Sesion" />
     <TextField fx:id="username" layoutX="74.0" layoutY="112.0" />
     <TextField fx:id="password" layoutX="76.0" layoutY="182.0" />
     <Label layoutX="76.0" layoutY="95.0" text="Usuario :" />
