@@ -9,14 +9,17 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="518.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cliente.HelloController">
   <children>
-    <Button fx:id="btnlogin" layoutX="66.0" layoutY="391.0" mnemonicParsing="false" onMouseClicked="#login" prefHeight="42.0" prefWidth="152.0" text="Iniciar Sesion" />
+    <Button fx:id="btnlogin" layoutX="72.0" layoutY="452.0" mnemonicParsing="false" onMouseClicked="#Login" prefHeight="25.0" prefWidth="152.0" text="Iniciar Sesion" />
     <TextField fx:id="username" layoutX="74.0" layoutY="112.0" />
     <TextField fx:id="password" layoutX="76.0" layoutY="182.0" />
     <Label layoutX="76.0" layoutY="95.0" text="Usuario :" />
     <Label layoutX="76.0" layoutY="165.0" text="Contraseña :" />
       <Label layoutX="76.0" layoutY="225.0" text="Telefono :" />
       <TextField fx:id="phone" layoutX="76.0" layoutY="242.0" />
+    <Button fx:id="btnSeleccionarArchivo" layoutX="66.0" layoutY="300.0" mnemonicParsing="false" onMouseClicked="#seleccionarArchivo" prefHeight="42.0" prefWidth="152.0" text="Seleccionar Archivo" />
+    <Label fx:id="lblRutaArchivo" layoutX="73.0" layoutY="350.0" prefHeight="70.0" prefWidth="152.0" text="Ruta del Archivo:" wrapText="true" />
+      <Button fx:id="btnRegistro" layoutX="72.0" layoutY="507.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="152.0" onMouseClicked="#abrirRegistro" text="Registrarse" />
   </children>
 </AnchorPane>

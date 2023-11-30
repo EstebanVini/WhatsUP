@@ -13,7 +13,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-
+import javafx.stage.FileChooser;
+import java.io.File;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -37,11 +38,23 @@ public class HelloController {
     TextArea textArea;
     @FXML
     Button button;
+    @FXML
+    private Button btnSeleccionarArchivo;
+
+    @FXML
+    private Button btnRegresar;
+
+    @FXML
+    private Label lblRutaArchivo;
+    @FXML
+    private Button btnRegistro;
 
     private String ultimoMensajeRecibido = ""; // Variable para almacenar el último mensaje recibido
     Socket socket;
     DataOutputStream salida;
     DataInputStream entrada;
+
+    String rutaCertificado = "";
 
     // lista de usuarios conectados
     private List<User> users = new ArrayList<>();
@@ -141,6 +154,27 @@ public class HelloController {
             } catch (Exception error) {
                 System.out.println(error);
             }
+        }
+    }
+
+    @FXML
+    void seleccionarArchivo() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar Archivo");
+
+        // Muestra el diálogo y obtén el archivo seleccionado
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            // Obtiene la ruta del archivo seleccionado y la muestra en la etiqueta
+            rutaCertificado = selectedFile.getAbsolutePath();
+            lblRutaArchivo.setText("Ruta del Archivo: " + rutaCertificado);
+
+            // Puedes guardar la ruta del archivo en una variable si es necesario
+            // Por ejemplo: String rutaArchivoSeleccionado = rutaArchivo;
+        } else {
+            // El usuario cerró el diálogo sin seleccionar un archivo
+            lblRutaArchivo.setText("Ruta del Archivo: (Ningún archivo seleccionado)");
         }
     }
 
@@ -318,10 +352,104 @@ public class HelloController {
     }
 
     @FXML
-    void login() {
+    void abrirRegistro() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("registro.fxml"));
+            Parent root = loader.load();
+
+            // Configura el controlador actual para la nueva vista
+            HelloController registroController = loader.getController();
+            // Puedes agregar configuraciones específicas para la vista de registro si es necesario
+
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) btnRegistro.getScene().getWindow(); // Obtiene la ventana actual
+            stage.setScene(scene);
+        } catch (Exception e) {
+            System.out.println("Error al abrir la ventana de registro: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    void abrirLogin(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            Parent root = loader.load();
+
+            // Configura el controlador actual para la nueva vista
+            HelloController loginController = loader.getController();
+
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) btnRegresar.getScene().getWindow(); // Obtiene la ventana actual
+            stage.setScene(scene);
+        } catch (Exception e) {
+            System.out.println("Error al abrir la ventana de registro: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    void Login() {
         String usernameText = username.getText();
         String passwordText = password.getText();
         String phoneText = phone.getText();
+
+
+        // Valida los campos de nombre de usuario, contraseña y teléfono
+        if (usernameText.isEmpty() || passwordText.isEmpty() || phoneText.isEmpty()) {
+            // Muestra un mensaje de error al usuario
+            System.out.println("Error: Debe llenar todos los campos");
+            return;
+        }
+
+        String hashPassword = Cifrado.hash(passwordText);
+        // Crea un objeto User con los datos ingresados
+        User user = new User(usernameText, hashPassword, phoneText);
+
+        // Envía el objeto User al servidor
+        try {
+            // inicializa la conexión con el servidor usando la función initialize()
+            initialize();
+
+            // Envía el objeto User al servidor
+            salida.writeUTF("Login Usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone() + "," + rutaCertificado);
+            salida.flush();
+
+            // Muestra un mensaje de éxito al usuario
+            System.out.println("Solicitando Login: " + user.getUsername());
+
+            // Espera confirmación del servidor con mensaje de éxito o error
+            String mensajeRecibido = entrada.readUTF();
+
+            if (mensajeRecibido.startsWith("Login exitoso") && mensajeRecibido.contains(user.getUsername())) {
+                // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
+                stage.setScene(scene);
+            } else {
+                // Muestra una alerta con el mensaje de error
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error al iniciar sesión");
+                alert.setContentText(mensajeRecibido);
+                alert.showAndWait();
+
+                // Muestra un mensaje de error al usuario
+                System.out.println("Error al iniciar sesión: " + mensajeRecibido);
+            }
+
+        } catch (IOException e) {
+            // Muestra un mensaje de error al usuario
+            System.out.println("Error: No se pudo enviar el mensaje al servidor");
+        }
+    }
+
+    @FXML
+    void Registro() {
+        String usernameText = username.getText();
+        String passwordText = password.getText();
+        String phoneText = phone.getText();
+
 
         // Valida los campos de nombre de usuario, contraseña y teléfono
         if (usernameText.isEmpty() || passwordText.isEmpty() || phoneText.isEmpty()) {
@@ -343,21 +471,35 @@ public class HelloController {
             salida.writeUTF("Nuevo usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone());
             salida.flush();
 
-            // Muestra un mensaje de éxito al usuario
-            System.out.println("Usuario registrado con éxito: " + user.getUsername());
+            // Espera confirmación del servidor con mensaje de éxito o error
+            String mensajeRecibido = entrada.readUTF();
 
-            // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
-            stage.setScene(scene);
+            if (mensajeRecibido.startsWith("Nuevo usuario creado") && mensajeRecibido.contains(user.getUsername())) {
+                // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+                Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
+                stage.setScene(scene);
+            } else {
+                // Muestra una alerta con el mensaje de error
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error al crear usuario");
+                alert.setContentText(mensajeRecibido);
+                alert.showAndWait();
+
+                // Muestra un mensaje de error al usuario
+                System.out.println("Error al crear usuario: " + mensajeRecibido);
+            }
 
         } catch (IOException e) {
             // Muestra un mensaje de error al usuario
             System.out.println("Error: No se pudo enviar el mensaje al servidor");
         }
     }
+
+
 
     @FXML
     private void startChat(ActionEvent event) {

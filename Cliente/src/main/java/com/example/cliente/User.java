@@ -5,10 +5,13 @@ public class User {
     private String password;
     private String phone;
 
+    private String RutaCertificado;
+
     public User(String username, String password, String phoneText) {
         this.username = username;
         this.password = password;
         this.phone = phoneText;
+        this.RutaCertificado = "";
     }
 
 
@@ -21,5 +24,7 @@ public class User {
     }
 
     public String getPassword() {return password; }
+
+    public String getRutaCertificado() {return RutaCertificado; }
 
 }
