@@ -7,35 +7,9 @@ import java.io.File;
 import java.io.FileWriter;
 
 
-
 public class AC {
-    ServerSocket servidor;
-    List<ManejadorDeClientes> clientes;
 
-    List<String> UsuariosConectados;
-
-    public AC(int port) {
-        clientes = new ArrayList<>();
-        UsuariosConectados = new ArrayList<>();
-
-        try {
-            servidor = new ServerSocket(port);
-            System.out.println("Servidor Corriendo");
-            while (true) {
-                Socket socket = servidor.accept();
-
-                ManejadorDeClientes clientHandler = new ManejadorDeClientes(socket);
-                clientes.add(clientHandler);
-
-                Thread thread = new Thread(clientHandler);
-                thread.start();
-            }
-        } catch (IOException i) {
-            System.out.println(i);
-        }
-    }
-
-    public static void GenerarCertificado(String texto, String nombreArchivo) {
+    public static boolean GenerarCertificado(String texto, String nombreArchivo) {
         try {
             // Crear un objeto File que representa el archivo
             File archivo = new File("Certificados", nombreArchivo);
@@ -61,64 +35,67 @@ public class AC {
 
             System.out.println("Certificado generado Exitosamente.");
 
+            return true;
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public static void main(String args[]) {
-        AC server = new AC(12346);
-    }
 
-    private class ManejadorDeClientes implements Runnable {
-        private Socket socket;
-        private DataInputStream entrada;
-        private DataOutputStream salida;
+    public static void main(String[] args) {
+        try {
+            Socket socket = null;
+            while (socket == null) {
+                try {
+                    socket = new Socket("127.0.0.1", 12345);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
 
-        public ManejadorDeClientes(Socket socket) {
-            this.socket = socket;
-        }
+            DataInputStream entrada = new DataInputStream(socket.getInputStream());
+            DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
 
-        @Override
-        public void run() {
-            try {
-                entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-                salida = new DataOutputStream(socket.getOutputStream());
 
-                String temp = "";
+            // Enviar mensajes desde la consola al servidor
+            String temp = "";
 
-                while (true) {
-                    temp = entrada.readUTF();
+            while (true) {
+                temp = entrada.readUTF();
 
-                    System.out.println(temp);
+                System.out.println(temp);
 
-                    if (temp.startsWith("Nuevo usuario")) {
-                        String[] parts = temp.split(",");
+                if (temp.startsWith("Nuevo usuario")) {
+                    String[] parts = temp.split(",");
 
-                        String username = parts[1];
-                        String password = parts[2];
+                    String username = parts[1];
+                    String password = parts[2];
 
-                        String phone = parts[3];
+                    String phone = parts[3];
 
-                        int LlavePublica = Integer.parseInt(phone.substring(phone.length() - 2));
+                    int LlavePublica = Integer.parseInt(phone.substring(phone.length() - 2));
 
-                        int LLavePrivada = Cifrado.inverso(LlavePublica);
+                    int LLavePrivada = Cifrado.inverso(LlavePublica);
 
-                        String LLavePrivadaString = Integer.toString(LLavePrivada);
+                    String LLavePrivadaString = Integer.toString(LLavePrivada);
 
-                        String NuevoCertificado = "Usuario: "+ username + ",Contraseña: " + password + ",LLave Privada: " + LLavePrivadaString;
+                    String NuevoCertificado = "Usuario: "+ username + ",Contraseña: " + password + ",LLave Privada: " + LLavePrivadaString;
 
-                        GenerarCertificado(NuevoCertificado, username + ".txt");
-
-                        // Mandar Lista de usuarios conectados a todos los clientes
-                        String listaUsuarios = "Usuarios: " + UsuariosConectados.toString();
-
+                    if (GenerarCertificado(NuevoCertificado, username + ".txt")){
+                        System.out.println("Registro exitoso" + username);
+                    } else {
+                        System.out.println("Error al generar certificado");
                     }
 
                 }
-            } catch (IOException i) {
-                System.out.println(i);
+
             }
+        } catch (IOException i) {
+            System.out.println(i);
         }
     }
 }

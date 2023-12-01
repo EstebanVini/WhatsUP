@@ -57,37 +57,25 @@ public class Server {
 
                     System.out.println(temp);
 
-                    if (temp.startsWith("Nuevo usuario")) {
-                        String[] parts = temp.split(",");
-
-                        String username = parts[1];
-                        String password = parts[2];
-                        String phone = parts[3];
-
-                        String NuevoUsuario = " Usuario:"+ username + "," + password + "," + phone;
-
-                        UsuariosConectados.add(NuevoUsuario);
-                        System.out.println("Nuevo usuario creado");
-
-                        System.out.println("Usuarios: " + UsuariosConectados.toString());
-
-                        // Mandar Lista de usuarios conectados a todos los clientes
-                        String listaUsuarios = "Usuarios: " + UsuariosConectados.toString();
-
+                    if (temp.startsWith("Nuevo usuario") || temp.startsWith("Login Usuario") || temp.startsWith("Login exitoso") || temp.startsWith("Registro exitoso") || temp.startsWith("Usuario no encontrado")) {
+                        DataOutputStream clienteSalida = this.salida;
                         for (ManejadorDeClientes client : clientes) {
-                            try {
-                                client.salida.writeUTF(listaUsuarios);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            if (client.salida != clienteSalida) {
+                                try {
+                                    client.salida.writeUTF(temp);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
+
                     } else  {
                         // Broadcast the message to all connected clients except the sender
                         DataOutputStream clienteSalida = this.salida;
                         for (ManejadorDeClientes client : clientes) {
                             if (client.salida != clienteSalida) {
                                 try {
-                                    client.salida.writeUTF(temp);
+                                    client.salida.writeUTF("Nuevo mensaje," + temp);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }

@@ -26,6 +26,7 @@ public class HelloController {
     public Button btnlogin, btnregistro, btnRevisarFirma, btnDescifrar, btndescifrarSobre;
 
     public CheckBox simetrico, asimetrico, sobredigital, plano, firmar;
+    public Button btnRegistrar;
 
     @FXML
     private ListView<String> connectedUsersList;
@@ -51,10 +52,28 @@ public class HelloController {
 
     private String ultimoMensajeRecibido = ""; // Variable para almacenar el último mensaje recibido
     Socket socket;
+
+    Socket socketAC;
+
+    Socket socketAR;
     DataOutputStream salida;
+
+    DataOutputStream salidaAC;
+
+    DataOutputStream salidaAR;
     DataInputStream entrada;
 
+    DataInputStream entradaAC;
+
+    DataInputStream entradaAR;
+
     String rutaCertificado = "";
+
+    Boolean LoginExitoso = false;
+
+    Boolean RegistroExitoso = false;
+
+    String UsuarioActual = "";
 
     // lista de usuarios conectados
     private List<User> users = new ArrayList<>();
@@ -292,7 +311,7 @@ public class HelloController {
     public void initialize() {
         Thread socketThread = new Thread(() -> {
             try {
-                socket = new Socket("127.0.0.1", 12346);
+                socket = new Socket("127.0.0.1", 12345);
                 entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 salida = new DataOutputStream(socket.getOutputStream());
 
@@ -329,9 +348,27 @@ public class HelloController {
                             Platform.runLater(() -> {
                                 initializeConnectedUsers(usuarios);
                             });
-                        }else {
+                        } else if (mensajeRecibido.startsWith("Login exitoso") && mensajeRecibido.contains(UsuarioActual)) {
+
+                            LoginExitoso = true;
+                            System.out.println("Usuario Autenticado Correctamente");
+
+                        } else if (mensajeRecibido.startsWith("Registro exitoso") && mensajeRecibido.contains(UsuarioActual)) {
+
+                            RegistroExitoso = true;
+                            System.out.println("Registro exitoso");
+                            if (RegistroExitoso) {
+                                // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
+                                abrirLogin();
+                            }
+                        }
+
+                        else if(mensajeRecibido.startsWith("Nuevo mensaje")) {
+                            //separar por comas y quitar el primer elemento
+                            String[] parts = mensajeRecibido.split(",");
+                            String mensaje = parts[1];
                             Platform.runLater(() -> {
-                                Label label = new Label(mensajeRecibido);
+                                Label label = new Label(mensaje);
                                 label.setStyle("-fx-font-weight: bold;");
                                 vbox.getChildren().add(label);
                             });
@@ -350,6 +387,21 @@ public class HelloController {
         socketThread.setDaemon(true);
         socketThread.start();
     }
+
+    // Función para inicializar la conexión con el servidor de certificados para hacer el registro
+    public void initializeCertificado() {
+        Thread socketThread = new Thread(() -> {
+            try {
+                socketAC = new Socket("127.0.0.1", 12346);
+                entradaAC = new DataInputStream(new BufferedInputStream(socketAC.getInputStream()));
+                salidaAC = new DataOutputStream(socketAC.getOutputStream());
+
+            } catch (IOException error) {
+                System.out.println(error);
+            }
+        });
+
+        }
 
     @FXML
     void abrirRegistro() {
@@ -386,6 +438,22 @@ public class HelloController {
         }
     }
 
+    void  abrirChat(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
+            Parent root = loader.load();
+
+            // Configura el controlador actual para la nueva vista
+            HelloController chatController = loader.getController();
+
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) btnlogin.getScene().getWindow(); // Obtiene la ventana actual
+            stage.setScene(scene);
+        } catch (Exception e) {
+            System.out.println("Error al abrir la ventana de registro: " + e.getMessage());
+        }
+    }
+
     @FXML
     void Login() {
         String usernameText = username.getText();
@@ -406,37 +474,23 @@ public class HelloController {
 
         // Envía el objeto User al servidor
         try {
-            // inicializa la conexión con el servidor usando la función initialize()
-            initialize();
 
-            // Envía el objeto User al servidor
-            salida.writeUTF("Login Usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone() + "," + rutaCertificado);
-            salida.flush();
+            if (!LoginExitoso){
+                // Envía el objeto User al servidor
+                salida.writeUTF("Login Usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone() + "," + rutaCertificado);
+                salida.flush();
 
-            // Muestra un mensaje de éxito al usuario
-            System.out.println("Solicitando Login: " + user.getUsername());
-
-            // Espera confirmación del servidor con mensaje de éxito o error
-            String mensajeRecibido = entrada.readUTF();
-
-            if (mensajeRecibido.startsWith("Login exitoso") && mensajeRecibido.contains(user.getUsername())) {
-                // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-                Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
-                stage.setScene(scene);
-            } else {
-                // Muestra una alerta con el mensaje de error
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Error al iniciar sesión");
-                alert.setContentText(mensajeRecibido);
-                alert.showAndWait();
-
-                // Muestra un mensaje de error al usuario
-                System.out.println("Error al iniciar sesión: " + mensajeRecibido);
+                // Muestra un mensaje de éxito al usuario
+                System.out.println("Solicitando Login: " + user.getUsername());
             }
+            else {
+                // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
+                abrirChat();
+            }
+
+
+
+
 
         } catch (IOException e) {
             // Muestra un mensaje de error al usuario
@@ -471,26 +525,9 @@ public class HelloController {
             salida.writeUTF("Nuevo usuario" + "," + user.getUsername() + "," + user.getPassword() + "," + user.getPhone());
             salida.flush();
 
-            // Espera confirmación del servidor con mensaje de éxito o error
-            String mensajeRecibido = entrada.readUTF();
-
-            if (mensajeRecibido.startsWith("Nuevo usuario creado") && mensajeRecibido.contains(user.getUsername())) {
+            if (RegistroExitoso) {
                 // Cambia automáticamente a la siguiente vista después de un inicio de sesión exitoso
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-                Stage stage = (Stage) username.getScene().getWindow(); // Obtiene la ventana actual
-                stage.setScene(scene);
-            } else {
-                // Muestra una alerta con el mensaje de error
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Error al crear usuario");
-                alert.setContentText(mensajeRecibido);
-                alert.showAndWait();
-
-                // Muestra un mensaje de error al usuario
-                System.out.println("Error al crear usuario: " + mensajeRecibido);
+                abrirLogin();
             }
 
         } catch (IOException e) {

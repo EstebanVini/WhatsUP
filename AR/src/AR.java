@@ -5,117 +5,81 @@ import java.util.List;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
 
 public class AR {
-    ServerSocket servidor;
-    List<ManejadorDeClientes> clientes;
 
-    List<String> UsuariosConectados;
+    public static String readAndJoinLines(String filePath) {
+        StringBuilder result = new StringBuilder();
 
-    public AR(int port) {
-        clientes = new ArrayList<>();
-        UsuariosConectados = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                result.append(line).append(",");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        // Eliminar la última coma si hay alguna línea leída
+        if (result.length() > 0) {
+            result.deleteCharAt(result.length() - 1);
+        }
+
+        return result.toString();
+    }
+
+
+    public static void main(String[] args) {
         try {
-            servidor = new ServerSocket(port);
-            System.out.println("Servidor Corriendo");
+            Socket socket = null;
+            socket = new Socket("127.0.0.1", 12345);
+
+            DataInputStream entrada = new DataInputStream(socket.getInputStream());
+            DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
+
+
+            // Enviar mensajes desde la consola al servidor
             while (true) {
-                Socket socket = servidor.accept();
-                System.out.println("Nuevo Cliente aceptado");
+                String temp = entrada.readUTF();
 
-                ManejadorDeClientes clientHandler = new ManejadorDeClientes(socket);
-                clientes.add(clientHandler);
+                System.out.println(temp);
 
-                Thread thread = new Thread(clientHandler);
-                thread.start();
+                if (temp.startsWith("Login Usuario")) {
+                    String[] parts = temp.split(",");
+                    String username = parts[1];
+                    String password = parts[2];
+                    String phone = parts[3];
+
+
+                    String dataCertificado = "";
+                    try{
+                        String RutaCertificado = parts[4];
+                        dataCertificado = readAndJoinLines(RutaCertificado);
+                    } catch (Exception e){
+                        System.out.println("Error al leer certificado");
+                    }
+
+
+                    if (dataCertificado.contains(username) && dataCertificado.contains(password)) {
+                        System.out.println("Usuario encontrado");
+                        salida.writeUTF("Login exitoso " + username );
+                    } else {
+                        System.out.println("Usuario no encontrado");
+                        salida.writeUTF("Usuario no encontrado");
+                    }
+
+
+                }
+
             }
         } catch (IOException i) {
             System.out.println(i);
         }
-    }
 
-    public static void GenerarCertificado(String texto, String nombreArchivo) {
-        try {
-            // Crear un objeto File que representa el archivo
-            File archivo = new File(nombreArchivo);
-
-            // Crear un objeto FileWriter que permitirá escribir en el archivo
-            FileWriter escritor = new FileWriter(archivo);
-
-            // Crear un objeto BufferedWriter para escribir de manera eficiente
-            BufferedWriter bufferEscritura = new BufferedWriter(escritor);
-
-            // Dividir el texto en líneas
-            String[] lineas = texto.split("\n");
-
-            // Escribir cada línea en el archivo
-            for (String linea : lineas) {
-                bufferEscritura.write(linea);
-                bufferEscritura.newLine(); // Agregar una nueva línea después de cada línea
-            }
-
-            // Cerrar el BufferedWriter y FileWriter para liberar recursos
-            bufferEscritura.close();
-            escritor.close();
-
-            System.out.println("Texto escrito exitosamente en el archivo.");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void main(String args[]) {
-        AR server = new AR(12346);
-    }
-
-    private class ManejadorDeClientes implements Runnable {
-        private Socket socket;
-        private DataInputStream entrada;
-        private DataOutputStream salida;
-
-        public ManejadorDeClientes(Socket socket) {
-            this.socket = socket;
-        }
-
-        @Override
-        public void run() {
-            try {
-                entrada = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-                salida = new DataOutputStream(socket.getOutputStream());
-
-                String temp = "";
-
-                while (true) {
-                    temp = entrada.readUTF();
-
-                    System.out.println(temp);
-
-                    if (temp.startsWith("Nuevo usuario")) {
-                        String[] parts = temp.split(",");
-
-                        String username = parts[1];
-                        String password = parts[2];
-                        String phone = parts[3];
-
-                        String NuevoUsuario = " Usuario:"+ username + "," + password + "," + phone;
-
-                        UsuariosConectados.add(NuevoUsuario);
-                        System.out.println("Nuevo usuario creado");
-
-                        System.out.println("Usuarios: " + UsuariosConectados.toString());
-
-                        // Mandar Lista de usuarios conectados a todos los clientes
-                        String listaUsuarios = "Usuarios: " + UsuariosConectados.toString();
-
-                    }
-
-                }
-            } catch (IOException i) {
-                System.out.println(i);
-            }
-        }
     }
 }
