@@ -47,9 +47,10 @@ public class AR {
             while (true) {
                 String temp = entrada.readUTF();
 
-                System.out.println(temp);
+
 
                 if (temp.startsWith("Login Usuario")) {
+                    System.out.println(temp);
                     String[] parts = temp.split(",");
                     String username = parts[1];
                     String password = parts[2];

@@ -67,9 +67,10 @@ public class AC {
             while (true) {
                 temp = entrada.readUTF();
 
-                System.out.println(temp);
+
 
                 if (temp.startsWith("Nuevo usuario")) {
+                    System.out.println(temp);
                     String[] parts = temp.split(",");
 
                     String username = parts[1];

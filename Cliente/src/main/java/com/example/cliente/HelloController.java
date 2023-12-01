@@ -203,8 +203,13 @@ public class HelloController {
             String llaveDescifrado = llavedescifrar.getText();
 
             try {
+                // separar por comas y quitar el primer elemento
+                String[] parts = ultimoMensajeRecibido.split(",");
+                String mensaje = parts[1];
                 // Descifra el último mensaje recibido
-                String mensajeDescifrado = Cifrado.descifrar(ultimoMensajeRecibido, Integer.parseInt(llaveDescifrado));
+                String mensajeDescifrado = Cifrado.descifrar(mensaje, Integer.parseInt(llaveDescifrado));
+
+
 
                 // Muestra el mensaje descifrado en la interfaz
                 Platform.runLater(() -> {
