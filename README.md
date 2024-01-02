@@ -4,7 +4,7 @@ Esteban Viniegra Pérez Olagaray Universidad Panamericana, Escuela de Ingenierí
 Ingeniería en Inteligencia de datos y Ciberseguridad \
 Materia: Criptografía y seguridad de redes
 
-*_Resumen—Este informe aborda la segunda entrega del proyecto que incluya varias medidas de seguridad para los mensajes. El objetivo principal es desarrollar una aplicación de mensajería instantánea que aproveche los principios de la criptografía para asegurar la seguridad de la información. El alcance de esta segunda entrega se centra en la implementación de varios tipos de cifrado, integración de sobres digitales, firma electrónica y generación de llaves simétricas y asimétricas._*
+*_Resumen—Este informe aborda la segunda entrega del proyecto que incluya varias medidas de seguridad para los mensajes. El objetivo principal es desarrollar una aplicación de mensajería instantánea que aproveche los principios de la criptografía para asegurar la seguridad de la información. El alcance de esta segunda entrega se centra en la implementación de varios tipos de cifrado, integración de sobres digitales,firma electrónica y generación de llaves simétricas y asimétricas._*
 
 Introducción
  La comunicación es una parte esencial de la vida humana, y cada vez más personas utilizan medios digitales para enviar y recibir mensajes. Sin embargo, estos medios pueden ser vulnerables a ataques informáticos que pongan en riesgo la privacidad y la integridad de los usuarios. Por eso, es importante contar con sistemas de mensajería segura que garanticen la confidencialidad, la autenticación y la no repudiación de los mensajes.
